@@ -1,0 +1,7 @@
+apiVersion: learning.aca.com/v1alpha1
+kind: HelloWorld
+metadata:
+  name: helloworld-sample
+spec:
+  # Add fields here
+  name: Roberto

@@ -2,7 +2,18 @@
 // TODO(user): Add simple overview of use/purpose
 
 ## Description
-// TODO(user): An in-depth paragraph about your project and overview of use
+
+A simple controller that shows how to reconcile a CR from a CRD, how to use finalizers and how to run reconciler tests.
+
+### Note:
+To run the tests use this command
+
+```bash
+go test ./internal/controller/...
+```
+
+This will omit the e2e tests which are failing.
+
 
 ## Getting Started
 
