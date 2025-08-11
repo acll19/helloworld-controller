@@ -71,9 +71,10 @@ func (r *HelloWorldReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 				if err := r.Get(ctx, req.NamespacedName, &hw); err != nil {
 					return err
 				}
-				patch := hw.DeepCopy()
-				controllerutil.AddFinalizer(patch, finalizerName)
-				return r.Patch(ctx, &hw, client.MergeFrom(patch))
+				original := hw.DeepCopy()
+				controllerutil.AddFinalizer(&hw, finalizerName)
+				patch := client.MergeFrom(original)
+				return r.Patch(ctx, &hw, patch)
 			})
 			if err != nil {
 				return ctrl.Result{}, err
@@ -93,11 +94,11 @@ func (r *HelloWorldReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 					return err
 				}
 				original := hw.DeepCopy()
-				removed := controllerutil.RemoveFinalizer(original, finalizerName)
+				removed := controllerutil.RemoveFinalizer(&hw, finalizerName)
 				if !removed {
 					return errors.New("error removing the finalizer")
 				}
-				patch := client.MergeFrom(hw.DeepCopy())
+				patch := client.MergeFrom(original)
 				return r.Patch(ctx, &hw, patch)
 			})
 			if err != nil {
