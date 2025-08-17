@@ -19,6 +19,7 @@ package controller
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/util/retry"
@@ -67,10 +68,12 @@ func (r *HelloWorldReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 		// then let's add the finalizer and update the object. This is equivalent
 		// to registering our finalizer.
 		if !controllerutil.ContainsFinalizer(&hw, finalizerName) {
+			if err := r.Get(ctx, req.NamespacedName, &hw); err != nil {
+				log.Error(err, fmt.Sprintf("error getting HelloWorld resource %s", hw.ObjectMeta.Name))
+				return ctrl.Result{}, err
+			}
 			err := retry.RetryOnConflict(retry.DefaultBackoff, func() error {
-				if err := r.Get(ctx, req.NamespacedName, &hw); err != nil {
-					return err
-				}
+
 				clonedHw := hw.DeepCopy()
 				controllerutil.AddFinalizer(&hw, finalizerName)
 				patch := client.MergeFrom(clonedHw)
